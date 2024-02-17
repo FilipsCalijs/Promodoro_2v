@@ -9,7 +9,7 @@
 		"url(https://www.pixground.com/wp-content/uploads/2024/02/Small-House-Facing-Tempest-AI-Generated-4K-Wallpaper-2048x1152.webp)",
 		"url(https://www.pixground.com/wp-content/uploads/2023/12/Sunrise-Over-Planet-Earth-AI-Generated-4K-Wallpaper-2048x1152.webp)",
 		"url(https://www.pixground.com/wp-content/uploads/2024/02/Palm-Silhouettes-At-Dusk-AI-Generated-4K-Wallpaper-2048x1152.webp)",
-		"url()",	
+
     ];
 
     let currentBackgroundIndex = 0;
@@ -61,9 +61,11 @@
 	
 	const btnToggleSettings = document.getElementById('feh-toggle-settings');
 	const btnCloseSettings = document.getElementById('feh-close-settings');
+	const btnRestart = document.getElementById('feh-toggle-restart');
 
-	let workDuration = parseInt(workDurationInput.value) * 20;
-	let restDuration = parseInt(restDurationInput.value) * 20;
+
+	let workDuration = parseInt(workDurationInput.value) * 6;
+	let restDuration = parseInt(restDurationInput.value) * 6;
 	let remainingTime = workDuration;
 	let isPaused = true;
 	let isWorking = true;
@@ -105,7 +107,7 @@
 	
 	
 	/******************************************************************************** 
-	* Play button is clicked + start timer
+	* Play button is clicked + start timer + restat button
 	********************************************************************************/
 
 	const startBtn = document.getElementById("start-btn");
@@ -133,6 +135,23 @@
 		}
 	});
 	
+	btnRestart.addEventListener('click', resetTimer);
+	function resetTimer() {
+		clearInterval(intervalId); // Очищаем интервал
+		intervalId = null; // Обнуляем переменную интервала
+		isPaused = true;
+		isWorking = true;
+		remainingTime = workDuration; // Устанавливаем оставшееся время в изначальное значение
+		fehBody.classList.remove('timer-running', 'timer-paused', 'rest-mode');
+		updateProgress();
+
+		document.title = "Restart Timer | Time has been stoped";
+	}
+	
+	
+	
+	
+	
 	
 	/******************************************************************************** 
 	* Pause button is clicked 
@@ -154,7 +173,7 @@
 	********************************************************************************/
 
 	workDurationInput.addEventListener("change", () => {
-		workDuration = parseInt(workDurationInput.value) * 20;
+		workDuration = parseInt(workDurationInput.value) * 6;
 		if (isWorking) {
 			remainingTime = workDuration;
 			updateProgress();
@@ -162,7 +181,7 @@
 	});
 
 	restDurationInput.addEventListener("change", () => {
-		restDuration = parseInt(restDurationInput.value) * 20;
+		restDuration = parseInt(restDurationInput.value) * 6;
 		if (!isWorking) {
 			remainingTime = restDuration;
 			updateProgress();
@@ -178,13 +197,17 @@
 		const workFinished = new Audio("/music/success-fanfare-trumpets-6185.mp3");
 		const restFinished = new Audio("/music/error-when-entering-the-game-menu-132111.mp3");
 	
+		
 		if (!isPaused) {
 			remainingTime--;
-	
+			
 			// Когда таймер останавливается
 			if (remainingTime <= 0) {
+
+
+
 				isWorking = !isWorking;
-				remainingTime = isWorking ? workDuration : restDuration;
+    			remainingTime = isWorking ? workDuration : restDuration;	
 	
 				// Проверка, какой таймер (работа/отдых) только что завершился
 				if (!isWorking) {
@@ -212,15 +235,24 @@
 	
 				// Таймер завершен
 				isPaused = true;
+				startNextCycle();
 				fehBody.classList.remove('timer-work-active');
+
+				
 			}
 	
-			document.title = timerTime.textContent = formatTime(remainingTime);
+			document.title = timerTime.textContent = formatTime(remainingTime) + " Time left";
 	
 			updateProgress();
 		}
 	}
 	
+	function startNextCycle() {
+		circleProgress.style.strokeDashoffset = 0;
+		startBtn.click(); 
+	}
+	
+ 	
 	
 	
 	/******************************************************************************** 
@@ -244,8 +276,8 @@
 	********************************************************************************/
 
 	function formatTime(seconds) {
-		const minutes = Math.floor(seconds / 20);
-		const remainingSeconds = seconds % 20;
+		const minutes = Math.floor(seconds / 6);
+		const remainingSeconds = seconds % 6;
 		return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
 	}
 	
