@@ -28,7 +28,23 @@
 
             // Переключение на следующее изображение при завершении таймера
             currentBackgroundIndex = (currentBackgroundIndex + 1) % backgroundImages.length;
-            updateBackground();
+        updateBackground();
+
+        // Проверка на завершение полного цикла работы и отдыха
+        if (currentBackgroundIndex === 0) {
+            completedCycles++;
+            if (completedCycles % longBreakInterval === 0) {
+                // Делаем длинный перерыв после N маленьких перерывов
+                document.getElementById("feh-timer-rest").textContent = "Long Rest";
+                // Здесь можно включить какие-то дополнительные действия для длинного перерыва
+                startNextCycle();  // Вызываем функцию для начала следующего цикла
+				updateProgress()
+            } else {
+                document.getElementById("feh-timer-rest").textContent = "Rest";
+                startNextCycle();  // Вызываем функцию для начала следующего цикла
+				updateProgress()
+            }
+        }
 			
 			// Проверка на завершение полного цикла работы и отдыха
 			if (currentBackgroundIndex === 0) {
@@ -70,11 +86,16 @@
 	let isPaused = true;
 	let isWorking = true;
 	let intervalId;
+	const longBreakInterval = 2;
 	
 	const completedSessionsElement = document.getElementById("feh-completed-sessions");
 	let completedSessions = 0;
 		
-	
+	const longRestDurationInput = document.getElementById("long-rest-duration");
+	let longRestDuration = parseInt(longRestDurationInput.value) * 6; 
+
+
+
 	/******************************************************************************** 
 	* Pomodoro overlay screen
 	********************************************************************************/
@@ -163,6 +184,7 @@
 
 		fehBody.classList.remove('timer-running');
 		fehBody.classList.add('timer-paused');
+		updateProgress()
 
 		// document.title = "Timer Paused";
 	});
@@ -182,8 +204,19 @@
 
 	restDurationInput.addEventListener("change", () => {
 		restDuration = parseInt(restDurationInput.value) * 6;
-		if (!isWorking) {
-			remainingTime = restDuration;
+		if (!isWorking && completedSessions % longBreakInterval !== 0) {
+			if (!isWorking) {
+				remainingTime = restDuration;
+				updateProgress();
+			}
+		}
+	});
+
+
+	longRestDurationInput.addEventListener("change", () => {
+		longRestDuration = parseInt(longRestDurationInput.value) * 6;
+		if (!isWorking && completedSessions % longBreakInterval === 0) {
+			remainingTime = longRestDuration;
 			updateProgress();
 		}
 	});
@@ -200,10 +233,12 @@
 		
 		if (!isPaused) {
 			remainingTime--;
-			
+			updateProgress()
 			// Когда таймер останавливается
 			if (remainingTime <= 0) {
 
+
+				
 
 
 				isWorking = !isWorking;
@@ -217,11 +252,9 @@
 					completedSessions++;
 					completedSessionsElement.textContent = completedSessions;
 	
-					// При каждом завершении сессии отдыха выбираем случайный фон
-					if (completedSessions % 2 === 0) {
-						currentBackgroundIndex = Math.floor(Math.random() * backgroundImages.length);
-						updateBackground();
-					}
+				
+
+					
 	
 					console.log(completedSessions);
 				} else {
@@ -249,7 +282,12 @@
 	
 	function startNextCycle() {
 		circleProgress.style.strokeDashoffset = 0;
-		startBtn.click(); 
+		if (completedSessions % longBreakInterval === 0) {
+			remainingTime = longRestDuration;
+		} else {
+			remainingTime = isWorking ? workDuration : restDuration;
+		}
+		startBtn.click();
 	}
 	
  	
@@ -268,6 +306,7 @@
 		const dashOffset = circumference * remainingTime / totalDuration;
 		
 		circleProgress.style.strokeDashoffset = dashOffset;
+		
 		timerTime.textContent = formatTime(remainingTime);
 	}
 
