@@ -45,23 +45,22 @@
 	const btnToggleSettings = document.getElementById('feh-toggle-settings');
 	const btnCloseSettings = document.getElementById('feh-close-settings');
 	const btnRestart = document.getElementById('feh-toggle-restart');
+	const completedSessionsElement = document.getElementById("feh-completed-sessions");
+	const longRestDurationInput = document.getElementById("long-rest-duration");
 
-
-	let workDuration = parseInt(workDurationInput.value) * 6;
-	let restDuration = parseInt(restDurationInput.value) * 6;
+	let workDuration = parseInt(workDurationInput.value) * 60;
+	let restDuration = parseInt(restDurationInput.value) * 60;
+	let longRestDuration = parseInt(longRestDurationInput.value) * 60; 
 	let remainingTime = workDuration;
 	let isPaused = true;
 	let isWorking = true;
 	let isLong = false;
 	let intervalId;
-	const longBreakInterval = 2;
-	
-	const completedSessionsElement = document.getElementById("feh-completed-sessions");
 	let completedSessions = 0;
-		
-	const longRestDurationInput = document.getElementById("long-rest-duration");
-	let longRestDuration = parseInt(longRestDurationInput.value) * 6; 
+	const longBreakInterval = 3;
+	
 
+	
 
 
 	/******************************************************************************** 
@@ -131,8 +130,8 @@
 		isPaused = true;
 		isWorking = true;
 		isLong = false;
-		remainingTime = workDuration; // Устанавливаем оставшееся время в изначальное значение
-		fehBody.classList.remove('timer-running', 'timer-paused', 'rest-mode');
+		remainingTime = isWorking ? workDuration : isLong ? longRestDuration : restDuration;
+		fehBody.classList.remove('timer-running');
 		updateProgress();
 
 		document.title = "Restart Timer | Time has been stoped";
@@ -164,7 +163,7 @@
 	********************************************************************************/
 
 	workDurationInput.addEventListener("change", () => {
-		workDuration = parseInt(workDurationInput.value) * 6;
+		workDuration = parseInt(workDurationInput.value) * 60;
 		if (isWorking) {
 			remainingTime = workDuration;
 			updateProgress();
@@ -172,7 +171,7 @@
 	});
 
 	restDurationInput.addEventListener("change", () => {
-		restDuration = parseInt(restDurationInput.value) * 6;
+		restDuration = parseInt(restDurationInput.value) * 60;
 		if (!isWorking && completedSessions % longBreakInterval !== 0) {
 			if (!isWorking) {
 				remainingTime = restDuration;
@@ -183,7 +182,7 @@
 
 
 	longRestDurationInput.addEventListener("change", () => {
-		longRestDuration = parseInt(longRestDurationInput.value) * 6;
+		longRestDuration = parseInt(longRestDurationInput.value) * 60;
 		if (!isWorking && completedSessions % longBreakInterval === 0) {
 			isLong = true;
 			remainingTime = longRestDuration;
@@ -221,26 +220,29 @@
 						completedSessionsElement.textContent = completedSessions;
 						
 						console.log("short");
+						console.log(completedSessions, longBreakInterval);
 						
 					} else {
 						// Действия при завершении обычного отдыха
 						fehBody.classList.remove('rest-mode');
 						fehBody.classList.remove('timer-running'); 
-
+						
 						completedSessions++;
 						completedSessionsElement.textContent = completedSessions;
 
 						console.log("long");
+						console.log(completedSessions, longBreakInterval);
 					}
 
 					// Только здесь увеличиваем completedSessions, после того как проверили, нужно ли делать long rest
 				} else {
 					// Действия при завершении работы
+					console.log("work");
+					console.log(completedSessions, longBreakInterval);
 					fehBody.classList.remove('rest-mode');
 					fehBody.classList.remove('timer-running'); 
 				}
 
-	
 				// Переключение звука в зависимости от периода помидора или отдыха
 				playAlarm = isWorking ? restFinished : workFinished;
 				playAlarm.play();
@@ -261,10 +263,12 @@
 	
 	function startNextCycle() {
 		circleProgress.style.strokeDashoffset = 0;
-		if (completedSessions % longBreakInterval === 0) {
+		if (completedSessions % longBreakInterval === 0 && !isWorking) {
 			remainingTime = longRestDuration;
+			isLong = true;
 		} else {
 			remainingTime = isWorking ? workDuration : restDuration;
+			isLong = false;
 		}
 		startBtn.click();
 	}
@@ -280,8 +284,12 @@
 
 		const radius = 45;
 		const circumference = 2 * Math.PI * radius;
-
-		const totalDuration = isWorking ? workDuration : restDuration;
+		let totalDuration;
+		if (isLong){
+			totalDuration = isWorking ? workDuration : longRestDuration;
+		} else{
+			totalDuration = isWorking ? workDuration : restDuration;
+		}
 		const dashOffset = circumference * remainingTime / totalDuration;
 		
 		circleProgress.style.strokeDashoffset = dashOffset;
@@ -294,8 +302,8 @@
 	********************************************************************************/
 
 	function formatTime(seconds) {
-		const minutes = Math.floor(seconds / 6);
-		const remainingSeconds = seconds % 6;
+		const minutes = Math.floor(seconds / 60);
+		const remainingSeconds = seconds % 60;
 		return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
 	}
 	
