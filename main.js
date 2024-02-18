@@ -20,40 +20,7 @@
         document.getElementById('vista-bg').style.backgroundImage = backgroundImages[currentBackgroundIndex];
     }
 
-    function updateTimer() {
-        // ... (остальной существующий код)
 
-        if (remainingTime <= 0) {
-            // ... (остальной существующий код)
-
-            // Переключение на следующее изображение при завершении таймера
-            currentBackgroundIndex = (currentBackgroundIndex + 1) % backgroundImages.length;
-        updateBackground();
-
-        // Проверка на завершение полного цикла работы и отдыха
-        if (currentBackgroundIndex === 0) {
-            completedCycles++;
-            if (completedCycles % longBreakInterval === 0) {
-                // Делаем длинный перерыв после N маленьких перерывов
-                document.getElementById("feh-timer-rest").textContent = "Long Rest";
-                // Здесь можно включить какие-то дополнительные действия для длинного перерыва
-                startNextCycle();  // Вызываем функцию для начала следующего цикла
-				updateProgress()
-            } else {
-                document.getElementById("feh-timer-rest").textContent = "Rest";
-                startNextCycle();  // Вызываем функцию для начала следующего цикла
-				updateProgress()
-            }
-        }
-			
-			// Проверка на завершение полного цикла работы и отдыха
-			if (currentBackgroundIndex === 0) {
-				// Делаем дополнительные действия после завершения полного цикла, если нужно
-			}
-        }
-
-        // ... (остальной существующий код)
-    }
 
     // ... (остальной существующий код)
 
@@ -85,6 +52,7 @@
 	let remainingTime = workDuration;
 	let isPaused = true;
 	let isWorking = true;
+	let isLong = false;
 	let intervalId;
 	const longBreakInterval = 2;
 	
@@ -162,6 +130,7 @@
 		intervalId = null; // Обнуляем переменную интервала
 		isPaused = true;
 		isWorking = true;
+		isLong = false;
 		remainingTime = workDuration; // Устанавливаем оставшееся время в изначальное значение
 		fehBody.classList.remove('timer-running', 'timer-paused', 'rest-mode');
 		updateProgress();
@@ -216,6 +185,7 @@
 	longRestDurationInput.addEventListener("change", () => {
 		longRestDuration = parseInt(longRestDurationInput.value) * 6;
 		if (!isWorking && completedSessions % longBreakInterval === 0) {
+			isLong = true;
 			remainingTime = longRestDuration;
 			updateProgress();
 		}
@@ -237,30 +207,39 @@
 			// Когда таймер останавливается
 			if (remainingTime <= 0) {
 
-
-				
-
-
 				isWorking = !isWorking;
-    			remainingTime = isWorking ? workDuration : restDuration;	
-	
-				// Проверка, какой таймер (работа/отдых) только что завершился
-				if (!isWorking) {
-					fehBody.classList.add('rest-mode');
-					fehBody.classList.remove('timer-running');
-	
-					completedSessions++;
-					completedSessionsElement.textContent = completedSessions;
-	
+    			remainingTime = isWorking ? workDuration : isLong ? longRestDuration : restDuration;	
 				
+								// Проверка, какой таймер (работа/отдых) только что завершился
+				if (!isWorking) {
+					if (completedSessions % longBreakInterval === 0) {
+						// Действия при завершении long rest
+						fehBody.classList.add('rest-mode');
+						fehBody.classList.remove('timer-running');
+						
+						completedSessions++;
+						completedSessionsElement.textContent = completedSessions;
+						
+						console.log("short");
+						
+					} else {
+						// Действия при завершении обычного отдыха
+						fehBody.classList.remove('rest-mode');
+						fehBody.classList.remove('timer-running'); 
 
-					
-	
-					console.log(completedSessions);
+						completedSessions++;
+						completedSessionsElement.textContent = completedSessions;
+
+						console.log("long");
+					}
+
+					// Только здесь увеличиваем completedSessions, после того как проверили, нужно ли делать long rest
 				} else {
+					// Действия при завершении работы
 					fehBody.classList.remove('rest-mode');
 					fehBody.classList.remove('timer-running'); 
 				}
+
 	
 				// Переключение звука в зависимости от периода помидора или отдыха
 				playAlarm = isWorking ? restFinished : workFinished;
