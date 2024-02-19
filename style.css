@@ -9,6 +9,8 @@ html, body { height: 100%; font-family: uniform; }
    max-width: 1100px;
    margin: 0 auto;
    padding: 0 15px;
+
+  
 }
 
 body {
@@ -17,6 +19,8 @@ body {
     justify-content: center;
     align-items: center;
     height: 100%;
+	overflow: hidden;
+
 }
 
 /** 
@@ -26,8 +30,8 @@ body {
 	background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
-    height: 100%;
-	width: 100%;
+    height: 105%;
+	width: 105%;
 	position: absolute;
 	transition: all 0.6s ease-in-out;
 }
@@ -96,8 +100,8 @@ body.rest-mode #vista-bg {
 		transition: all 0.3s ease-in-out;
 	}
 	.btn-icon.left {
-		left: 10px; /* Задаем отступ слева */
-		right: auto; /* Очищаем значение для правого отступа */
+		left: 10px; 
+		right: auto; 
 	}
 	
 	#feh-toggle-settings, #feh-toggle-restart {
@@ -171,7 +175,7 @@ body.rest-mode #vista-bg {
 		display: flex;
 		color: #5c5c5cb8;
 		align-items: center;
-		transition: all 0.3s ease-in-out;
+		/* transition: all 0.3s ease-in-out; */
 	}
 	body.settings-active #feh-timer-sessions {
 		opacity: 0;
@@ -256,13 +260,17 @@ body.rest-mode #vista-bg {
 			opacity: 1;
 			visibility: visible;
 		}
-			#feh-close-settings {
-				top: -95px;
-				height: 80px;
-				background: #d85e3a;
-				color: #f7ddd7;
-			}
-			#feh-close-settings:hover { color: #fff; }
+		#feh-close-settings {
+			top: -110px;
+			height: 80px;
+			background: #d85e3a;
+			color: #f7ddd7;
+			transition: none; 
+		}
+		#feh-close-settings:hover {
+			color: #fff;
+			transition: none; 
+		}
 
 			#feh-timer-form {
 				border-radius: 20px;
@@ -270,7 +278,7 @@ body.rest-mode #vista-bg {
 				bottom: 0;
 				left: 0;
 				width: 100%;
-				padding: 0 20px;
+				padding: 0 10px;
 				background: #d85e3a;
 				z-index: 1;
 			}
@@ -278,10 +286,15 @@ body.rest-mode #vista-bg {
 					display: flex;
 				}
 				.feh-timer-line:nth-child(2n+1) {
-					margin-top: 20px;
-					margin-bottom: 20px;
+					margin-top: 10px;
+					margin-bottom: 10px;
 
 				}
+				.feh-timer-line:last-child {
+					margin-bottom: 10px;
+
+				}
+			
 					.feh-timer-line * {
 						font-size: 18px;
 					}
@@ -302,3 +315,112 @@ body.rest-mode #vista-bg {
 					#feh-timer-form input::-webkit-outer-spin-button,
 					#feh-timer-form input::-webkit-inner-spin-button { -webkit-appearance: none; }
 					#feh-timer-form input[type=number] { -moz-appearance: textfield; }
+
+
+
+					@media (max-width: 280px) {
+						#feh-close-settings {
+							transform: translateX(-100%);	
+						}
+						.feh-timer-line label{
+							font-size: 15px;
+						}
+						#feh-timer-form{
+							padding: 20 10px;
+						}
+					  }
+
+										
+					@media only screen and (min-width: 600px) and (min-height: 300px) and (orientation: landscape) {
+
+					#feh-timer-line{
+						justify-content : space-between;
+					}
+					#feh-pomodoro:last-child{
+						margin-right: 20px;
+					}
+					#feh-pomodoro {
+						display: flex;
+						flex-direction: row;
+						max-width: none;
+						width: auto;
+
+					}
+					#feh-timer-form{
+						padding: 20px 10px;
+					}
+
+					
+					#feh-pomodoro-overlay {
+						position: static;
+						width: 150px; 
+						height: auto; 
+						margin-right: 15px;
+					}
+					#feh-timer-buttons button{
+						right: 100px;
+						bottom: 20px;
+					}
+					  #feh-timer-form {
+						width: 260px;
+
+						transform: translateX(-100%);
+
+					}
+					
+					#feh-timer-sessions {
+						height: 50px;
+						width: 260px;
+						margin-left: 10px;
+						top: 50%;
+						left: 50%;
+						transform: translate(0%, 220%);
+						border-radius: 50px;
+						background: #fff;
+						display: flex;
+						color: #5c5c5cb8;
+						align-items: center;
+
+					}
+					#feh-close-settings{
+						top: 90px;
+					}
+
+					#feh-timer-progress {
+						margin-bottom: 0;
+					}
+
+					#feh-timer-functions {
+						height: auto;
+					}
+
+					#feh-timer-buttons {
+						flex-direction: row;
+					}
+
+					#feh-pomodoro-overlay{
+						display: none;
+					}
+
+					#feh-close-settings {
+						transform:  translate(-210px, -115px); 
+  }
+					}
+
+					.feh-timer-line {
+						justify-content: center;
+						margin-top: 0;
+						margin-bottom: 0;
+					}
+
+					.feh-timer-line label {
+
+						padding: 10px 20px 10px 0; 
+					}
+
+					.feh-timer-line input {
+						width: 80px; 
+						margin-left: 0;
+						margin-top: 10px; 
+					}
+					

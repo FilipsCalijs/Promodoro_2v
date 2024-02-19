@@ -1,36 +1,10 @@
-(function () {
-    // ... (весь существующий код)
-
-    const backgroundImages = [
-		"url(https://www.pixground.com/wp-content/uploads/2023/04/Sunset-Forest-Scenery-AI-Generated-4K-Wallpaper.jpg)",
-		"url(https://www.pixground.com/wp-content/uploads/2023/09/Sunset-Anime-Comet-Stars-AI-Generated-4K-Wallpaper-1-jpg.webp)",
-		"url(https://www.pixground.com/wp-content/uploads/2024/02/Glowing-Colorful-River-AI-Generated-4K-Wallpaper-2048x1152.webp)",
-		"url(https://www.pixground.com/wp-content/uploads/2024/02/Frozen-Chunks-Of-Iceberg-AI-Generated-4K-Wallpaper-2048x1152.webp)",
-		"url(https://www.pixground.com/wp-content/uploads/2024/02/Small-House-Facing-Tempest-AI-Generated-4K-Wallpaper-2048x1152.webp)",
-		"url(https://www.pixground.com/wp-content/uploads/2023/12/Sunrise-Over-Planet-Earth-AI-Generated-4K-Wallpaper-2048x1152.webp)",
-		"url(https://www.pixground.com/wp-content/uploads/2024/02/Palm-Silhouettes-At-Dusk-AI-Generated-4K-Wallpaper-2048x1152.webp)",
-
-    ];
-
-    let currentBackgroundIndex = 0;
-
-    // ... (остальной существующий код)
-
-    function updateBackground() {
-        document.getElementById('vista-bg').style.backgroundImage = backgroundImages[currentBackgroundIndex];
-    }
-
-
-
-    // ... (остальной существующий код)
-
-    updateBackground(); // Установка изначального фона
-
-})();
-
 
 
 (function () {
+
+
+
+
 
 	/******************************************************************************** 
 	* Declare vars
@@ -41,6 +15,7 @@
 	const restDurationInput = document.getElementById("rest-duration");
 	const circleProgress = document.querySelector(".circle-progress");
 	const timerTime = document.getElementById("feh-timer-time");
+	const intervalInput = document.getElementById("long-rest-interval");
 	
 	const btnToggleSettings = document.getElementById('feh-toggle-settings');
 	const btnCloseSettings = document.getElementById('feh-close-settings');
@@ -48,19 +23,66 @@
 	const completedSessionsElement = document.getElementById("feh-completed-sessions");
 	const longRestDurationInput = document.getElementById("long-rest-duration");
 
+
+
 	let workDuration = parseInt(workDurationInput.value) * 60;
 	let restDuration = parseInt(restDurationInput.value) * 60;
 	let longRestDuration = parseInt(longRestDurationInput.value) * 60; 
+	let Interval = parseInt(intervalInput.value);
 	let remainingTime = workDuration;
 	let isPaused = true;
 	let isWorking = true;
 	let isLong = false;
 	let intervalId;
 	let completedSessions = 0;
-	const longBreakInterval = 3;
+	let longBreakInterval = Interval;
+	
+	
 	
 
+
+	/******************************************************************************** 
+	* BG
+	********************************************************************************/
+
+
+		//here you can add your bg it's like a feature 
+	 const backgroundImages = [
+		
+		"url(https://www.pixground.com/wp-content/uploads/2023/04/Sunset-Forest-Scenery-AI-Generated-4K-Wallpaper.jpg)",
+		"url(https://images5.alphacoders.com/133/1338269.png)",
+		"url(https://images.alphacoders.com/134/1343532.png)",
+		"url(https://images4.alphacoders.com/134/1341419.png)",
+		"url(https://www.pixground.com/wp-content/uploads/2023/09/Sunset-Anime-Comet-Stars-AI-Generated-4K-Wallpaper-1-jpg.webp)",
+		"url(https://www.pixground.com/wp-content/uploads/2024/02/Glowing-Colorful-River-AI-Generated-4K-Wallpaper-2048x1152.webp)",
+		"url(https://www.pixground.com/wp-content/uploads/2024/02/Frozen-Chunks-Of-Iceberg-AI-Generated-4K-Wallpaper-2048x1152.webp)",
 	
+
+
+    ];
+
+    let currentBackgroundIndex = 0;
+
+
+
+    function updateBackground() {
+		
+        document.getElementById('vista-bg').style.backgroundImage = backgroundImages[currentBackgroundIndex];
+		if (currentBackgroundIndex <= backgroundImages.length){
+			currentBackgroundIndex = currentBackgroundIndex + 1;
+		}else{
+			currentBackgroundIndex = 0
+		}
+		
+    }
+
+
+
+
+    updateBackground(); 
+
+
+
 
 
 	/******************************************************************************** 
@@ -125,8 +147,8 @@
 	
 	btnRestart.addEventListener('click', resetTimer);
 	function resetTimer() {
-		clearInterval(intervalId); // Очищаем интервал
-		intervalId = null; // Обнуляем переменную интервала
+		clearInterval(intervalId); 
+		intervalId = null; 
 		isPaused = true;
 		isWorking = true;
 		isLong = false;
@@ -154,7 +176,7 @@
 		fehBody.classList.add('timer-paused');
 		updateProgress()
 
-		// document.title = "Timer Paused";
+		
 	});
 	
 	
@@ -189,6 +211,16 @@
 			updateProgress();
 		}
 	});
+
+
+	intervalInput.addEventListener("change", () => {
+		Interval = parseInt(intervalInput.value);
+		longBreakInterval = Interval;
+	
+		console.log(Interval)
+
+	});
+
 	
 	
 	/******************************************************************************** 
@@ -203,51 +235,60 @@
 		if (!isPaused) {
 			remainingTime--;
 			updateProgress()
-			// Когда таймер останавливается
+		
 			if (remainingTime <= 0) {
 
 				isWorking = !isWorking;
     			remainingTime = isWorking ? workDuration : isLong ? longRestDuration : restDuration;	
 				
-								// Проверка, какой таймер (работа/отдых) только что завершился
 				if (!isWorking) {
 					if (completedSessions % longBreakInterval === 0) {
-						// Действия при завершении long rest
+
 						fehBody.classList.add('rest-mode');
 						fehBody.classList.remove('timer-running');
 						
 						completedSessions++;
 						completedSessionsElement.textContent = completedSessions;
 						
-						console.log("short");
-						console.log(completedSessions, longBreakInterval);
+						updateBackground();
+					
+						console.log("short", backgroundImages.length);
+						console.log("interval", longBreakInterval, Interval)
+	
+						console.log(completedSessions, "interval",longBreakInterval);
 						
 					} else {
-						// Действия при завершении обычного отдыха
+
 						fehBody.classList.remove('rest-mode');
 						fehBody.classList.remove('timer-running'); 
 						
 						completedSessions++;
 						completedSessionsElement.textContent = completedSessions;
+						updateBackground();
 
-						console.log("long");
-						console.log(completedSessions, longBreakInterval);
+						console.log("long", backgroundImages.length);
+						console.log("interval", longBreakInterval, Interval)
+	
+						console.log(completedSessions, "interval",longBreakInterval);
 					}
 
-					// Только здесь увеличиваем completedSessions, после того как проверили, нужно ли делать long rest
+					
 				} else {
-					// Действия при завершении работы
-					console.log("work");
-					console.log(completedSessions, longBreakInterval);
+
+					console.log("work",backgroundImages.length);
+					console.log("interval", longBreakInterval, Interval)
+
+					console.log(completedSessions, "interval",longBreakInterval);
 					fehBody.classList.remove('rest-mode');
 					fehBody.classList.remove('timer-running'); 
+
+					updateBackground();
 				}
 
-				// Переключение звука в зависимости от периода помидора или отдыха
 				playAlarm = isWorking ? restFinished : workFinished;
 				playAlarm.play();
 	
-				// Таймер завершен
+	
 				isPaused = true;
 				startNextCycle();
 				fehBody.classList.remove('timer-work-active');

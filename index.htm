@@ -32,12 +32,12 @@
 				<text id="feh-timer-time" x="50" y="50" text-anchor="middle" dy=".3em" font-size="18">00:00</text>
 				<text id="feh-timer-pause" x="50" y="68" text-anchor="middle" dy=".3em" font-size="7">Paused</text>
 				<text id="feh-timer-rest" x="50" y="68" text-anchor="middle" dy=".3em" font-size="7">Rest</text>
-				<!-- <text id="feh-timer-rest-long" x="50" y="68" text-anchor="middle" dy=".3em" font-size="7">Long Rest</text> -->
+
 			</svg>
 		</div>
 
 	   <div id="feh-timer-sessions">
-			<p id="feh-completed-label">Completed work sessions: </p>
+			<p id="feh-completed-label">Completed sessions: </p>
 			<p id="feh-completed-sessions">0</p>
 		</div>
 
@@ -47,16 +47,20 @@
 
 			   <form id="feh-timer-form">
 				  <p class="feh-timer-line">
-					 <label for="work-duration">Pomodoro:</label>
-					 <input type="number" id="work-duration" value="1" min="1">
+					 <label for="work-duration">Work time:</label>
+					 <input type="number" id="work-duration" value="25" min="1">
 				  </p>
 				  <p class="feh-timer-line">
 					 <label for="rest-duration">Short break:</label>
-					 <input type="number" id="rest-duration" value="1" min="1">
+					 <input type="number" id="rest-duration" value="5" min="1">
 				  </p>
 				  <p class="feh-timer-line">
-					<label for="long-rest-duration">Long Rest:</label>
-					<input type="number" id="long-rest-duration" value="3" min="1">
+					<label for="long-rest-duration">Long Break:</label>
+					<input type="number" id="long-rest-duration" value="25" min="1">
+				 </p>
+				 <p class="feh-timer-line">
+					<label for="long-rest-interval"> Interval:</label>
+					<input type="number" id="long-rest-interval" value="2" min="1">
 				 </p>
 				
 			   </form>
